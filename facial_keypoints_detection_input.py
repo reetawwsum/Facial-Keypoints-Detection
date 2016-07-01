@@ -1,7 +1,5 @@
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
 
 file_path = 'dataset/'
 train_file = 'training.csv'
@@ -47,24 +45,7 @@ def read_test_file(max_images=None):
 
 	return images
 
-def preprocessing_dataset(raw_images, raw_targets):
-	images = MinMaxScaler(feature_range=(0, 1)).fit_transform(raw_images)
-	targets = MinMaxScaler(feature_range=(-1, 1)).fit_transform(raw_targets)
-
-	return images, targets
-
-def plot_image(image, target=None):
-	plt.figure()
-
-	plt.imshow(np.reshape(image, (96, 96)), cmap='gray')
-
-	if target is not None:
-		plt.plot(target[0::2], target[1::2], 'o')
-
-	return plt
-
 if __name__ == '__main__':
-	raw_images, raw_targets = read_train_file()
-	images, targets = preprocessing_dataset(raw_images, raw_targets)
+	images, targets = read_train_file()
 
 	print images.shape
