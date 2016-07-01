@@ -32,6 +32,7 @@ def inference(images):
 	return logits
 
 def loss_op(logits, targets):
+	# Mean square error (MSE)
 	loss = tf.reduce_mean(tf.square(logits - targets))
 
 	return loss
@@ -43,7 +44,10 @@ def train_op(loss, learning_rate, momentum):
 	return train
 
 def accuracy(predictions, targets):
-	pass
+	# Root mean square error (RMSE)
+	accuracy = tf.sqrt(tf.reduce_mean(tf.square(predictions - targets)))
+
+	return accuracy
 
 if __name__ == '__main__':
 	pass
