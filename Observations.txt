@@ -40,3 +40,4 @@ Observations & Experimentations
 5. Dropping images with missing targets.
 6. Dataset reduced to 2140 images for training. Only 30 percent of the total training dataset.
 7. Scaling the images in range (0, 1) and targets to (-1, 1).
+8. Building a 2 layer neural network with 100 neurons in hidden layer.
