@@ -1,6 +1,7 @@
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import MinMaxScaler
 
 file_path = 'dataset/'
 train_file = 'training.csv'
@@ -15,13 +16,17 @@ def read_train_file(max_images=None):
 		images = []
 
 		for row in csv_reader:
-			if csv_reader.line_num == max_images:
+			if len(images) == max_images:
 				break
 
-			targets.append(row[:-1])
-			images.append(row[-1].split())
+			target = row[:-1]
 
-		images = np.array(images).astype(int)
+			if not np.sum(np.array(target) == ''):
+				targets.append(target)
+				images.append(row[-1].split())
+
+		images = np.array(images).astype(float)
+		targets = np.array(targets).astype(float)
 
 	return images, targets
 
@@ -33,15 +38,20 @@ def read_test_file(max_images=None):
 		images = []
 
 		for row in csv_reader:
-			if csv_reader.line_num == max_images:
+			if len(images) == max_images:
 				break
 
 			images.append(row[-1].split())
 		
-		images = np.array(images).astype(int)
+		images = np.array(images).astype(float)
 
 	return images
 
+def preprocessing_dataset(raw_images, raw_targets):
+	images = MinMaxScaler(feature_range=(0, 1)).fit_transform(raw_images)
+	targets = MinMaxScaler(feature_range=(-1, 1)).fit_transform(raw_targets)
+
+	return images, targets
 
 def plot_image(image, target=None):
 	plt.figure()
@@ -54,13 +64,7 @@ def plot_image(image, target=None):
 	return plt
 
 if __name__ == '__main__':
-	train_images, targets = read_train_file(10)
-	test_images = read_test_file(10)
+	raw_images, raw_targets = read_train_file()
+	images, targets = preprocessing_dataset(raw_images, raw_targets)
 
-	random_train_index = np.random.randint(train_images.shape[0])
-	random_test_index = np.random.randint(test_images.shape[0])
-
-	plot_image(train_images[random_train_index], targets[random_train_index])
-	plot_image(test_images[random_test_index])
-
-	plt.show()
+	print images.shape

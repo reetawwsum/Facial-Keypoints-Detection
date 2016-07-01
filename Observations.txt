@@ -2,3 +2,41 @@ Observations & Experimentations
 ===============================
 
 1. Reading a portion of training image, in order to speed up the code designing process.
+2. Finding the missing target values in dataset.
+3. Lot of missing target values.
+	Target Feature, Missing count
+	1 10
+	2 10
+	3 13
+	4 13
+	5 4778
+	6 4778
+	7 4782
+	8 4782
+	9 4781
+	10 4781
+	11 4781
+	12 4781
+	13 4779
+	14 4779
+	15 4824
+	16 4824
+	17 4779
+	18 4779
+	19 4813
+	20 4813
+	21 0
+	22 0
+	23 4780
+	24 4780
+	25 4779
+	26 4779
+	27 4774
+	28 4774
+	29 33
+	30 33
+4. Plotting the missing target images for first keypoint.
+[1687, 1834, 1866, 1938, 2100, 2137, 2153, 2175, 2186, 2239]
+5. Dropping images with missing targets.
+6. Dataset reduced to 2140 images for training. Only 30 percent of the total training dataset.
+7. Scaling the images in range (0, 1) and targets to (-1, 1).
