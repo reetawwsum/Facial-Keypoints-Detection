@@ -6,9 +6,18 @@ from sklearn.preprocessing import MinMaxScaler
 learning_rate = 0.01
 momentum = 0.9
 
-def preprocessing_dataset(raw_images, raw_targets):
-	images = MinMaxScaler(feature_range=(0, 1)).fit_transform(raw_images)
-	targets = MinMaxScaler(feature_range=(-1, 1)).fit_transform(raw_targets)
+image_scaler = MinMaxScaler(feature_range=(0, 1))
+targets_scaler = MinMaxScaler(feature_range=(-1, 1))
+
+def scaling_dataset(raw_images, raw_targets):
+	images = image_scaler.fit_transform(raw_images)
+	targets = targets_scaler.fit_transform(raw_targets)
+
+	return images, targets
+
+def unscaling_dataset(scaled_images, scaled_targets):
+	images = image_scaler.inverse_transform(scaled_images)
+	targets = targets_scaler.inverse_transform(scaled_targets)
 
 	return images, targets
 
@@ -28,6 +37,9 @@ def run_training():
 
 		# Adding train op to the graph
 		train = train_op(loss, learning_rate, momentum)
+
+		# Adding accuracy op to the graph
+		score = accuracy(logits, targets_placeholder)
 
 	# Training my model
 	with tf.Session(graph=graph) as sess:
