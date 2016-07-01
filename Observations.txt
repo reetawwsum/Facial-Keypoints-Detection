@@ -1,2 +1,4 @@
 Observations & Experimentations
 ===============================
+
+1. Reading a portion of training image, in order to speed up the code designing process.
