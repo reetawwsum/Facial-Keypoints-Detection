@@ -9,6 +9,8 @@ test_file = 'test.csv'
 class facial:
 	pass
 
+keypoints = ['left_eye_center_x', 'left_eye_center_y', 'right_eye_center_x', 'right_eye_center_y', 'left_eye_inner_corner_x', 'left_eye_inner_corner_y', 'left_eye_outer_corner_x', 'left_eye_outer_corner_y', 'right_eye_inner_corner_x', 'right_eye_inner_corner_y', 'right_eye_outer_corner_x', 'right_eye_outer_corner_y', 'left_eyebrow_inner_end_x', 'left_eyebrow_inner_end_y', 'left_eyebrow_outer_end_x', 'left_eyebrow_outer_end_y', 'right_eyebrow_inner_end_x', 'right_eyebrow_inner_end_y', 'right_eyebrow_outer_end_x', 'right_eyebrow_outer_end_y', 'nose_tip_x', 'nose_tip_y', 'mouth_left_corner_x', 'mouth_left_corner_y', 'mouth_right_corner_x', 'mouth_right_corner_y', 'mouth_center_top_lip_x', 'mouth_center_top_lip_y', 'mouth_center_bottom_lip_x', 'mouth_center_bottom_lip_y']
+
 def read_train_file(max_images=None):
 	with open(file_path + train_file, 'rb') as f:
 		csv_reader = csv.reader(f, delimiter=',')
@@ -55,6 +57,23 @@ def read_test_file(max_images=None):
 		test.images = images
 
 	return test
+
+def write_output(content, file_name='output.csv'):
+	with open(file_path + file_name, 'wb') as f:
+		csv_writer = csv.writer(f, delimiter=',')
+		csv_writer.writerow(['RowId', 'Location'])	
+
+		with open(file_path + 'IdLookupTable.csv') as g:
+			csv_reader = csv.reader(g, delimiter=',')
+			csv_reader.next()
+
+			for row in csv_reader:
+				row_id = row[0]
+				target = content[int(row[1])-1]
+				keypoint_index = keypoints.index(row[2])
+				keypoint_location = target[keypoint_index]
+
+				csv_writer.writerow([row_id, keypoint_location])
 
 def split_train_dataset(train_dataset, validation_size):
 	X_train, X_test, y_train, y_test = cross_validation.train_test_split(train_dataset.images, train_dataset.targets, test_size=validation_size, random_state=42)
