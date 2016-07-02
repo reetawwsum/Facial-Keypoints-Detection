@@ -1,26 +1,42 @@
+import os
 import numpy as np
 from facial_keypoints_detection_input import *
 from facial_keypoints_detection_model import *
+from facial_keypoints_plot import *
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.externals import joblib
 
 learning_rate = 0.01
 momentum = 0.9
 max_epochs = 401
 
-image_scaler = MinMaxScaler(feature_range=(0, 1))
-targets_scaler = MinMaxScaler(feature_range=(-1, 1))
-
-def scaling_dataset(raw_images, raw_targets):
+def scaling_dataset(raw_images, raw_targets=None):
+	image_scaler = MinMaxScaler(feature_range=(0, 1))
 	images = image_scaler.fit_transform(raw_images)
-	targets = targets_scaler.fit_transform(raw_targets)
 
-	return images, targets
+	joblib.dump(image_scaler, 'dataset/image_scaler.pkl')
 
-def unscaling_dataset(scaled_images, scaled_targets):
-	images = image_scaler.inverse_transform(scaled_images)
+	if raw_targets is not None:
+		targets_scaler = MinMaxScaler(feature_range=(-1, 1))
+		targets = targets_scaler.fit_transform(raw_targets)
+
+		joblib.dump(targets_scaler, 'dataset/targets_scaler.pkl')
+		
+		return images, targets
+
+	return images
+
+def unscaling_dataset(scaled_targets, scaled_images=None):
+	targets_scaler = joblib.load('dataset/targets_scaler.pkl')
 	targets = targets_scaler.inverse_transform(scaled_targets)
 
-	return images, targets
+	if scaled_images is not None:
+		image_scaler = joblib.load('dataset/image_scaler.pkl')
+		images = image_scaler.inverse_transform(scaled_images)
+
+		return images, targets
+
+	return targets
 
 def run_training():
 	# Building my graph
@@ -75,5 +91,42 @@ def run_training():
 				print '  Training Accuracy: %.3f' % s
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
 
+def make_predictions():
+	# Building my graph
+	graph = tf.Graph()
+
+	with graph.as_default():
+		# Creating placeholder for images
+		images_placeholder, _ = placeholder_input()
+
+		# Building a graph inference
+		logits = inference(images_placeholder)
+
+		# Creating saver to read training checkpoints
+		saver = tf.train.Saver()
+
+	# Making prediction using saved model
+	with tf.Session(graph=graph) as sess:
+		saver.restore(sess, 'dataset/my-model-400')
+		print 'Model Restored'
+
+		print 'Loading dataset'
+		test = read_test_file()
+		print 'Dataset loaded'
+
+		# Scaling the test dataset
+		test_images = scaling_dataset(test.images)
+		predictions = []
+
+		for i, image in enumerate(test_images):
+			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, 9216))})
+			prediction = unscaling_dataset(scaled_prediction)
+
+			predictions.append(prediction[0])
+
+		print 'Writing predictions to a file'
+		write_output(predictions)			
+
 if __name__ == '__main__':
 	run_training()
+	make_predictions()
