@@ -13,7 +13,11 @@ def plot_image(image, target=None):
 	return plt
 
 if __name__ == '__main__':
-	images, targets = read_train_file(10)
+	dataset = load_images()
+
+	train_dataset = dataset['train_dataset']
+	images = train_dataset.images
+	targets = train_dataset.targets
 
 	random_index = np.random.randint(len(images))
 
