@@ -5,6 +5,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 learning_rate = 0.01
 momentum = 0.9
+max_epochs = 401
 
 image_scaler = MinMaxScaler(feature_range=(0, 1))
 targets_scaler = MinMaxScaler(feature_range=(-1, 1))
@@ -41,12 +42,38 @@ def run_training():
 		# Adding accuracy op to the graph
 		score = accuracy(logits, targets_placeholder)
 
+		# Creating saver to write training checkpoints
+		saver = tf.train.Saver()
+
 	# Training my model
 	with tf.Session(graph=graph) as sess:
 		# Initializing all variables
 		init = tf.initialize_all_variables()
 		sess.run(init)
 		print 'Graph Initialized'
+
+		print 'Loading Images'
+		dataset = load_images()
+		print 'Loading Complete'
+		train_dataset = dataset['train_dataset']
+		validation_dataset = dataset['validation_dataset']
+
+		# Scaling the dataset
+		train_images, train_targets = scaling_dataset(train_dataset.images, train_dataset.targets)
+		validation_images, validation_targets = scaling_dataset(validation_dataset.images, validation_dataset.targets)
+
+		train_feed_dict = {images_placeholder: train_images, targets_placeholder: train_targets}
+		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets}
+
+		for step in xrange(max_epochs):
+			l, s, _ = sess.run([loss, score, train], feed_dict=train_feed_dict)
+
+			if not step % 50:
+				saver.save(sess, 'dataset/my-model', global_step=step) 
+
+				print 'Loss at Epoch %d: %f' % (step, l)
+				print '  Training Accuracy: %.3f' % s
+				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
 
 if __name__ == '__main__':
 	run_training()

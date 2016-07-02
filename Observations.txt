@@ -41,3 +41,36 @@ Observations & Experimentations
 6. Dataset reduced to 2140 images for training. Only 30 percent of the total training dataset.
 7. Scaling the images in range (0, 1) and targets to (-1, 1).
 8. Building a 2 layer neural network with 100 neurons in hidden layer.
+Loss at Epoch 0: 11.234591
+  Training Accuracy: 3.352
+  Validation Accuracy: 1.397
+Loss at Epoch 1: 2.116712
+  Training Accuracy: 1.455
+  Validation Accuracy: 1.530
+Loss at Epoch 2: 2.542514
+  Training Accuracy: 1.595
+  Validation Accuracy: 0.937
+Loss at Epoch 3: 0.878887
+  Training Accuracy: 0.937
+  Validation Accuracy: 0.582
+Loss at Epoch 4: 0.271621
+  Training Accuracy: 0.521
+  Validation Accuracy: 0.451
+Loss at Epoch 5: 0.120528
+  Training Accuracy: 0.347
+  Validation Accuracy: 0.413
+Loss at Epoch 6: 0.087913
+  Training Accuracy: 0.297
+  Validation Accuracy: 0.399
+Loss at Epoch 7: 0.078295
+  Training Accuracy: 0.280
+  Validation Accuracy: 0.393
+Loss at Epoch 8: 0.074098
+  Training Accuracy: 0.272
+  Validation Accuracy: 0.390
+Loss at Epoch 9: 0.071733
+  Training Accuracy: 0.268
+  Validation Accuracy: 0.387
+Loss at Epoch 10: 0.070190
+  Training Accuracy: 0.265
+  Validation Accuracy: 0.386
