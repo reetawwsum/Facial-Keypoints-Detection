@@ -116,4 +116,46 @@ After 400 epochs, training and validation accuracy has saturated.
 14. Unable to run full batch learning due to memory limitation. Converting the dataset into mini batches.
 15. Using batch size of 64, and running the model for one full epoch, it appears my model is facing gradient exploding problem.
 16. Reducing the learning rate, and running the model for two epochs.
-17. Reducing the leanring rate does the trick.
+17. Reducing the learning rate does the trick.
+Loss at Epoch 3: 0.052496
+  Training Accuracy: 0.229
+  Validation Accuracy: 0.375
+Loss at Epoch 4: 0.043467
+  Training Accuracy: 0.208
+  Validation Accuracy: 0.371
+18. Increasing the batch size to 128 to speed up the learning process.
+19. My model is not converging quickly. I better change my training algorithm.
+20. Changing learning algorithm to Adam.
+21. Model is overfitting.
+Loss at Epoch 11: 0.034074
+  Training Accuracy: 0.185
+  Validation Accuracy: 0.332
+Loss at Epoch 12: 0.033729
+  Training Accuracy: 0.184
+  Validation Accuracy: 0.334
+Loss at Epoch 13: 0.027280
+  Training Accuracy: 0.165
+  Validation Accuracy: 0.329
+Loss at Epoch 14: 0.033347
+  Training Accuracy: 0.183
+  Validation Accuracy: 0.325
+Loss at Epoch 15: 0.026673
+  Training Accuracy: 0.163
+  Validation Accuracy: 0.328
+Loss at Epoch 16: 0.024165
+  Training Accuracy: 0.155
+  Validation Accuracy: 0.314
+22. Inspite of getting overfit, the model is improving.
+23. Validation accuracy is somewhat saturated.
+Loss at Epoch 25: 0.019323
+  Training Accuracy: 0.139
+  Validation Accuracy: 0.306
+Loss at Epoch 26: 0.017004
+  Training Accuracy: 0.130
+  Validation Accuracy: 0.305
+Loss at Epoch 27: 0.017614
+  Training Accuracy: 0.133
+  Validation Accuracy: 0.301
+Loss at Epoch 28: 0.017378
+  Training Accuracy: 0.132
+  Validation Accuracy: 0.302
