@@ -1,8 +1,11 @@
 import tensorflow as tf
 
+image_size = 96
+num_targets = 30
+
 def placeholder_input():
-	images_placeholder = tf.placeholder(tf.float32, shape=(None, 9216))
-	targets_placeholder = tf.placeholder(tf.float32, shape=(None, 30))
+	images_placeholder = tf.placeholder(tf.float32, shape=(None, image_size, image_size, 1))
+	targets_placeholder = tf.placeholder(tf.float32, shape=(None, num_targets))
 
 	return images_placeholder, targets_placeholder	
 
@@ -14,20 +17,61 @@ def bias_variable(shape):
 	initial = tf.constant(0.1, shape=shape)
 	return tf.Variable(initial)
 
-def inference(images):
-	# Hidden layer
-	with tf.name_scope('hidden'):
-		weights = weight_variable([9216, 100])
-		biases = bias_variable([100])
+def conv2d(x, W):
+	return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
-		hidden = tf.nn.relu(tf.matmul(images, weights) + biases)
+def max_pool_2x2(x):
+	return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
+
+def inference(images):
+	# Convolutional layer 1
+	with tf.name_scope('conv1'):
+		weights = weight_variable([3, 3, 1, 32])
+		biases = bias_variable([32])
+
+		conv1 = tf.nn.relu(conv2d(images, weights) + biases)
+
+	pool1 = max_pool_2x2(conv1)
+
+	# Convolutional layer 2
+	with tf.name_scope('conv2'):
+		weights = weight_variable([2, 2, 32, 64])
+		biases = bias_variable([64])
+
+		conv2 = tf.nn.relu(conv2d(pool1, weights) + biases)
+
+	pool2 = max_pool_2x2(conv2)
+
+	# Convolutional layer 3
+	with tf.name_scope('conv3'):
+		weights = weight_variable([2, 2, 64, 128])
+		biases = bias_variable([128])
+
+		conv3 = tf.nn.relu(conv2d(pool2, weights) + biases)
+
+	pool3 = max_pool_2x2(conv3)
+
+	# Fully connected layer 1
+	with tf.name_scope('fc1'):
+		weights = weight_variable([12 * 12 * 128, 500])
+		biases = bias_variable([500])
+
+		pool3_flat = tf.reshape(pool3, [-1, 12 * 12 * 128])
+		fc1 = tf.nn.relu(tf.matmul(pool3_flat, weights) + biases)
+
+	# Fully connected layer 2
+	with tf.name_scope('fc2'):
+		weights = weight_variable([500, 500])
+		biases = bias_variable([500])
+
+		fc2 = tf.nn.relu(tf.matmul(fc1, weights) + biases)
 
 	# Linear layer
 	with tf.name_scope('linear'):
-		weights = weight_variable([100, 30])
+		weights = weight_variable([500, 30])
 		biases = bias_variable([30])
 
-		logits = tf.matmul(hidden, weights) + biases
+		logits = tf.matmul(fc2, weights) + biases
 
 	return logits
 
