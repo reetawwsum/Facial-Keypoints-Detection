@@ -8,10 +8,9 @@ from sklearn.externals import joblib
 from six.moves import cPickle as pickle
 
 learning_rate = 1e-3
-momentum = 0.9
-max_steps = 13601
+max_steps = 6801
 image_size = 96
-batch_size = 64
+batch_size = 128
 
 file_path = 'dataset/'
 train_validation_file = 'train_validation_loss.pickle'
@@ -61,7 +60,7 @@ def run_training():
 		loss = loss_op(logits, targets_placeholder)
 
 		# Adding train op to the graph
-		train = train_op(loss, learning_rate, momentum)
+		train = train_op(loss, learning_rate)
 
 		# Adding accuracy op to the graph
 		score = accuracy(logits, targets_placeholder)
@@ -105,10 +104,10 @@ def run_training():
 			l1 = sess.run(loss, feed_dict=validation_feed_dict)
 			validation_loss.append(l1)
 
-			if not step % 34:
-				saver.save(sess, 'dataset/my-model', global_step=step/34) 
+			if not step % 17:
+				saver.save(sess, 'dataset/my-model', global_step=step/17) 
 
-				print 'Loss at Epoch %d: %f' % (step/34, l)
+				print 'Loss at Epoch %d: %f' % (step/17, l)
 				print '  Training Accuracy: %.3f' % s
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
 
@@ -134,7 +133,7 @@ def make_predictions():
 
 	# Making prediction using saved model
 	with tf.Session(graph=graph) as sess:
-		saver.restore(sess, 'dataset/my-model-400')
+		saver.restore(sess, 'dataset/my-model-30')
 		print 'Model Restored'
 
 		print 'Loading dataset'
@@ -146,7 +145,7 @@ def make_predictions():
 		predictions = []
 
 		for i, image in enumerate(test_images):
-			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, 9216))})
+			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, image_size, image_size, 1))})
 			prediction = unscaling_dataset(scaled_prediction)
 
 			predictions.append(prediction[0])
