@@ -9,7 +9,7 @@ from six.moves import cPickle as pickle
 
 learning_rate = 0.01
 momentum = 0.9
-max_epochs = 11
+max_epochs = 401
 
 file_path = 'dataset/'
 train_validation_file = 'train_validation_loss.pickle'
@@ -146,4 +146,4 @@ def make_predictions():
 
 if __name__ == '__main__':
 	run_training()
-	# make_predictions()
+	make_predictions()
