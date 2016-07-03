@@ -40,7 +40,7 @@ Observations & Experimentations
 5. Dropping images with missing targets.
 6. Dataset reduced to 2140 images for training. Only 30 percent of the total training dataset.
 7. Scaling the images in range (0, 1) and targets to (-1, 1).
-8. Building a 2 layer neural network with 100 neurons in hidden layer.
+8. Building a 2 layer neural network with 100 neurons in hidden layer. (9216-100-30)
 Loss at Epoch 0: 11.234591
   Training Accuracy: 3.352
   Validation Accuracy: 1.397
@@ -110,3 +110,10 @@ Loss at Epoch 1000: 0.041996
   Validation Accuracy: 0.366
 After 400 epochs, training and validation accuracy has saturated.
 10. Plotting train loss and validation loss, shows that loss is not decreasing after 50 epochs.
+11. I can use Tensorboard to get the insights of the model.
+12. Making the model more complex by adding convolutions.
+13. 6 layer Convolutional Neural Network (1-32-P-64-P-128-P-500FC-500FC-30)
+14. Unable to run full batch learning due to memory limitation. Converting the dataset into mini batches.
+15. Using batch size of 64, and running the model for one full epoch, it appears my model is facing gradient exploding problem.
+16. Reducing the learning rate, and running the model for two epochs.
+17. Reducing the leanring rate does the trick.
