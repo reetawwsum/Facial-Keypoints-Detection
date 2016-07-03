@@ -1,10 +1,12 @@
 import csv
 import numpy as np
+from six.moves import cPickle as pickle
 from sklearn import cross_validation
 
 file_path = 'dataset/'
 train_file = 'training.csv'
 test_file = 'test.csv'
+train_validation_file = 'train_validation_loss.pickle'
 
 class facial:
 	pass
@@ -95,6 +97,12 @@ def load_images(validation_size=0.1):
 	dataset = {'train_dataset': train, 'validation_dataset': validation}
 
 	return dataset
+
+def load_train_validation_loss():
+	with open(file_path + train_validation_file, 'rb') as f:
+		train_validation_loss = pickle.load(f)
+
+	return train_validation_loss
 
 if __name__ == '__main__':
 	dataset = load_images()
