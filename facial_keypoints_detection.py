@@ -5,10 +5,14 @@ from facial_keypoints_detection_model import *
 from facial_keypoints_plot import *
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.externals import joblib
+from six.moves import cPickle as pickle
 
 learning_rate = 0.01
 momentum = 0.9
-max_epochs = 401
+max_epochs = 11
+
+file_path = 'dataset/'
+train_validation_file = 'train_validation_loss.pickle'
 
 def scaling_dataset(raw_images, raw_targets=None):
 	image_scaler = MinMaxScaler(feature_range=(0, 1))
@@ -81,8 +85,15 @@ def run_training():
 		train_feed_dict = {images_placeholder: train_images, targets_placeholder: train_targets}
 		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets}
 
+		train_loss = []
+		validation_loss = []
+
 		for step in xrange(max_epochs):
 			l, s, _ = sess.run([loss, score, train], feed_dict=train_feed_dict)
+			train_loss.append(l)
+
+			l1 = sess.run(loss, feed_dict=validation_feed_dict)
+			validation_loss.append(l1)
 
 			if not step % 50:
 				saver.save(sess, 'dataset/my-model', global_step=step) 
@@ -90,6 +101,12 @@ def run_training():
 				print 'Loss at Epoch %d: %f' % (step, l)
 				print '  Training Accuracy: %.3f' % s
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
+
+	# Storing train loss and validation loss in a file
+	train_validation_loss = {'train_loss': np.array(train_loss), 'validation_loss': np.array(validation_loss)}
+
+	with open(file_path + train_validation_file, 'wb') as f:
+		pickle.dump(train_validation_loss, f)
 
 def make_predictions():
 	# Building my graph
@@ -129,4 +146,4 @@ def make_predictions():
 
 if __name__ == '__main__':
 	run_training()
-	make_predictions()
+	# make_predictions()
