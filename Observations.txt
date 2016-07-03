@@ -74,3 +74,39 @@ Loss at Epoch 9: 0.071733
 Loss at Epoch 10: 0.070190
   Training Accuracy: 0.265
   Validation Accuracy: 0.386
+9. Plotting train loss and validation loss to check the insights of the model.
+Loss at Epoch 500: 0.042072
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 550: 0.042051
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 600: 0.042037
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 650: 0.042028
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 700: 0.042021
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 750: 0.042015
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 800: 0.042011
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 850: 0.042007
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 900: 0.042003
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 950: 0.041999
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+Loss at Epoch 1000: 0.041996
+  Training Accuracy: 0.205
+  Validation Accuracy: 0.366
+After 400 epochs, training and validation accuracy has saturated.
+10. Plotting train loss and validation loss, shows that loss is not decreasing after 50 epochs.
