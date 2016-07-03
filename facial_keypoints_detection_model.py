@@ -81,8 +81,8 @@ def loss_op(logits, targets):
 
 	return loss
 
-def train_op(loss, learning_rate, momentum):
-	optimizer = tf.train.MomentumOptimizer(learning_rate, momentum)
+def train_op(loss, learning_rate):
+	optimizer = tf.train.AdamOptimizer(learning_rate)
 	train = optimizer.minimize(loss)
 
 	return train
