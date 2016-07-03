@@ -7,9 +7,11 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.externals import joblib
 from six.moves import cPickle as pickle
 
-learning_rate = 0.01
+learning_rate = 1e-3
 momentum = 0.9
-max_epochs = 401
+max_steps = 13601
+image_size = 96
+batch_size = 64
 
 file_path = 'dataset/'
 train_validation_file = 'train_validation_loss.pickle'
@@ -26,8 +28,10 @@ def scaling_dataset(raw_images, raw_targets=None):
 
 		joblib.dump(targets_scaler, 'dataset/targets_scaler.pkl')
 		
+		images = np.reshape(images, (-1, image_size, image_size, 1))
 		return images, targets
 
+	images = np.reshape(images, (-1, image_size, image_size, 1))
 	return images
 
 def unscaling_dataset(scaled_targets, scaled_images=None):
@@ -82,23 +86,29 @@ def run_training():
 		train_images, train_targets = scaling_dataset(train_dataset.images, train_dataset.targets)
 		validation_images, validation_targets = scaling_dataset(validation_dataset.images, validation_dataset.targets)
 
-		train_feed_dict = {images_placeholder: train_images, targets_placeholder: train_targets}
 		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets}
 
 		train_loss = []
 		validation_loss = []
 
-		for step in xrange(max_epochs):
-			l, s, _ = sess.run([loss, score, train], feed_dict=train_feed_dict)
+		for step in xrange(max_steps):
+			offset = (step * batch_size) % (len(train_images) - batch_size)
+
+			batch_train_images = train_images[offset:(offset + batch_size)]
+			batch_train_targets = train_targets[offset:(offset + batch_size)]
+
+			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets}
+
+			l, s, _ = sess.run([loss, score, train], feed_dict=feed_dict)
 			train_loss.append(l)
 
 			l1 = sess.run(loss, feed_dict=validation_feed_dict)
 			validation_loss.append(l1)
 
-			if not step % 50:
-				saver.save(sess, 'dataset/my-model', global_step=step) 
+			if not step % 34:
+				saver.save(sess, 'dataset/my-model', global_step=step/34) 
 
-				print 'Loss at Epoch %d: %f' % (step, l)
+				print 'Loss at Epoch %d: %f' % (step/34, l)
 				print '  Training Accuracy: %.3f' % s
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
 
