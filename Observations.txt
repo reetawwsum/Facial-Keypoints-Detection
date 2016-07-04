@@ -159,3 +159,5 @@ Loss at Epoch 27: 0.017614
 Loss at Epoch 28: 0.017378
   Training Accuracy: 0.132
   Validation Accuracy: 0.302
+24. I need to perform some data augmentation to increase the training set.
+25. Performing horizontal flipping to the training dataset.
