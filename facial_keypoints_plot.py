@@ -32,5 +32,15 @@ def plot_loss_graph():
 	return plt
 
 if __name__ == '__main__':
-	plot_loss_graph()
-	plt.show() 	
+	train = read_train_file(10)
+
+	images = train.images
+	targets = train.targets
+
+	horizontal_flipped_images = np.reshape(np.reshape(images, (-1, 96, 96, 1))[:, :, ::-1, :], (-1, 9216))
+
+	images = np.append(images, horizontal_flipped_images, axis=0)
+	
+	plot_image(images[0])
+	plot_image(images[10])
+	plt.show()
