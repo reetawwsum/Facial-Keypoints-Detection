@@ -45,6 +45,14 @@ def unscaling_dataset(scaled_targets, scaled_images=None):
 
 	return targets
 
+def fetch_next_batch(train_images, train_targets, step):
+	offset = (step * batch_size) % (len(train_images) - batch_size)
+
+	batch_train_images = train_images[offset:(offset + batch_size)]
+	batch_train_targets = train_targets[offset:(offset + batch_size)]
+
+	return batch_train_images, batch_train_targets
+
 def run_training():
 	# Building my graph
 	graph = tf.Graph()	
@@ -91,10 +99,7 @@ def run_training():
 		validation_loss = []
 
 		for step in xrange(max_steps):
-			offset = (step * batch_size) % (len(train_images) - batch_size)
-
-			batch_train_images = train_images[offset:(offset + batch_size)]
-			batch_train_targets = train_targets[offset:(offset + batch_size)]
+			batch_train_images, batch_train_targets = fetch_next_batch(train_images, train_targets, step)
 
 			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets}
 
