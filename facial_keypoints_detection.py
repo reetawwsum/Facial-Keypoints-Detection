@@ -10,7 +10,7 @@ from six.moves import cPickle as pickle
 learning_rate = 1e-2
 max_steps = 13601
 image_size = 96
-batch_size = 128/2
+batch_size = 64
 
 file_path = 'dataset/'
 train_validation_file = 'train_validation_loss.pickle'
@@ -51,18 +51,18 @@ def fetch_next_batch(train_images, train_targets, step):
 	batch_train_images = train_images[offset:(offset + batch_size)]
 	batch_train_targets = train_targets[offset:(offset + batch_size)]
 
+	indices = np.random.choice(len(batch_train_images), len(batch_train_images), replace=False)
+
 	# Horizontal flipping the images
-	horizontal_flipped_images = batch_train_images[:, :, ::-1, :]
-	batch_train_images = np.append(batch_train_images, horizontal_flipped_images, axis=0)
+	batch_train_images[indices] = batch_train_images[indices, :, ::-1, :]
 
 	# Horizontal flipping the targets
-	batch_train_targets = np.append(batch_train_targets, batch_train_targets, axis=0)
-	batch_train_targets[10:, ::2] = batch_train_targets[10:, ::2] * -1 + 95
+	batch_train_targets[indices, ::2] = batch_train_targets[indices, ::2] * -1 + 95
 
 	flip_indices = [(0, 2), (1, 3), (4, 8), (5, 9), (6, 10), (7, 11), (12, 16), (13, 17), (14, 18), (15, 19), (22, 24), (23, 25)]
 
 	for a, b in flip_indices:
-		batch_train_targets[10:, [a, b]] = batch_train_targets[10:, [b, a]]
+		batch_train_targets[indices, a], batch_train_targets[indices, b] = batch_train_targets[indices, b], batch_train_targets[indices, a]
 
 	return batch_train_images, batch_train_targets
 
