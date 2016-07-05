@@ -170,3 +170,18 @@ Loss at Epoch 28: 0.017378
 32. Basically, I need to train my model at least 50-100 epochs, in order to see whether my model is converging or not.
 33. This can take hours in my workstation.
 34. Adding dropout and increasing the number of units in fully connected layers.
+35. Using data augmentation and creating the exact number of batch images using horizontal flipping, and appending the flipped images to the batch is not converging.
+36. Model was using 64 normal images, and 64 horizontal flipped images. But, somehow the model was not converging.
+37. Instead, now I'm flipping half of batch images at random. And now, the model is converging.
+Loss at Epoch 0: 114014.250000
+  Training Accuracy: 337.660
+  Validation Accuracy: 2800.474
+Loss at Epoch 1: 301.939484
+  Training Accuracy: 17.376
+  Validation Accuracy: 17.355
+Loss at Epoch 2: 3659.395264
+  Training Accuracy: 60.493
+  Validation Accuracy: 7.948
+Loss at Epoch 3: 70.577835
+  Training Accuracy: 8.401
+  Validation Accuracy: 8.132
