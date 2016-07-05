@@ -7,10 +7,10 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.externals import joblib
 from six.moves import cPickle as pickle
 
-learning_rate = 1e-3
-max_steps = 6801
+learning_rate = 1e-2
+max_steps = 13601
 image_size = 96
-batch_size = 128
+batch_size = 128/2
 
 file_path = 'dataset/'
 train_validation_file = 'train_validation_loss.pickle'
@@ -50,6 +50,19 @@ def fetch_next_batch(train_images, train_targets, step):
 
 	batch_train_images = train_images[offset:(offset + batch_size)]
 	batch_train_targets = train_targets[offset:(offset + batch_size)]
+
+	# Horizontal flipping the images
+	horizontal_flipped_images = batch_train_images[:, :, ::-1, :]
+	batch_train_images = np.append(batch_train_images, horizontal_flipped_images, axis=0)
+
+	# Horizontal flipping the targets
+	batch_train_targets = np.append(batch_train_targets, batch_train_targets, axis=0)
+	batch_train_targets[10:, ::2] = batch_train_targets[10:, ::2] * -1 + 95
+
+	flip_indices = [(0, 2), (1, 3), (4, 8), (5, 9), (6, 10), (7, 11), (12, 16), (13, 17), (14, 18), (15, 19), (22, 24), (23, 25)]
+
+	for a, b in flip_indices:
+		batch_train_targets[10:, [a, b]] = batch_train_targets[10:, [b, a]]
 
 	return batch_train_images, batch_train_targets
 
@@ -109,10 +122,10 @@ def run_training():
 			l1 = sess.run(loss, feed_dict=validation_feed_dict)
 			validation_loss.append(l1)
 
-			if not step % 17:
-				saver.save(sess, 'dataset/my-model', global_step=step/17) 
+			if not step % 34:
+				saver.save(sess, 'dataset/my-model', global_step=step/34) 
 
-				print 'Loss at Epoch %d: %f' % (step/17, l)
+				print 'Loss at Epoch %d: %f' % (step/34, l)
 				print '  Training Accuracy: %.3f' % s
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
 
