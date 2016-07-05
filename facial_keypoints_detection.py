@@ -7,7 +7,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.externals import joblib
 from six.moves import cPickle as pickle
 
-learning_rate = 1e-2
+learning_rate = 1e-3
 max_steps = 13601
 image_size = 96
 batch_size = 64
