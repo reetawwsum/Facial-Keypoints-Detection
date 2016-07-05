@@ -161,3 +161,12 @@ Loss at Epoch 28: 0.017378
   Validation Accuracy: 0.302
 24. I need to perform some data augmentation to increase the training set.
 25. Performing horizontal flipping to the training dataset.
+26. I have to run the model for more than 3000 epochs. It will take lot of time to generalise, since half the batch will be flipped images.
+27. I better add dropout and l2 regularisation and then train my model overnight.
+28. I can increase the complexity of the model.
+29. Model with data augmentation is converging very slowly.
+30. Maybe Adam is not performing better for this model.
+31. Hardware is restricting me to try out different learning rates and learning algorithm.
+32. Basically, I need to train my model at least 50-100 epochs, in order to see whether my model is converging or not.
+33. This can take hours in my workstation.
+34. Adding dropout and increasing the number of units in fully connected layers.
