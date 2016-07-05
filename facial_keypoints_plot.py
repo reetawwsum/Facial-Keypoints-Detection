@@ -4,13 +4,14 @@ from facial_keypoints_detection_input import *
 
 file_path = 'dataset/'
 
-def plot_image(image, target=None):
+def plot_image(image, target=None, title=None):
 	plt.figure()
 
 	plt.imshow(np.reshape(image, (96, 96)), cmap='gray')
 
 	if target is not None:
 		plt.plot(target[0::2], target[1::2], 'o')
+		plt.title(title)
 
 	return plt
 
@@ -49,6 +50,6 @@ if __name__ == '__main__':
 	for a, b in flip_indices:
 		targets[10:, [a, b]] = targets[10:, [b, a]]
 
-	plot_image(images[0], targets[0])
-	plot_image(images[10], targets[10])
+	plot_image(images[0], targets[0][:2], keypoints[0])
+	plot_image(images[10], targets[10][:2], keypoints[0])
 	plt.show()
