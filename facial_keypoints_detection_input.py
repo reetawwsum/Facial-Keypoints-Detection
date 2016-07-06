@@ -2,12 +2,16 @@ import csv
 import numpy as np
 from datetime import datetime
 from six.moves import cPickle as pickle
+from sklearn.externals import joblib
 from sklearn import cross_validation
+from sklearn.preprocessing import MinMaxScaler
 
 file_path = 'dataset/'
 train_file = 'training.csv'
 test_file = 'test.csv'
 log_file = 'log.csv'
+image_size = 96
+batch_size = 64
 
 class facial:
 	pass
@@ -98,6 +102,57 @@ def load_images(validation_size=0.1):
 	dataset = {'train_dataset': train, 'validation_dataset': validation}
 
 	return dataset
+
+def scaling_dataset(raw_images, raw_targets=None):
+	image_scaler = MinMaxScaler(feature_range=(0, 1))
+	images = image_scaler.fit_transform(raw_images)
+
+	joblib.dump(image_scaler, 'dataset/image_scaler.pkl')
+
+	if raw_targets is not None:
+		targets_scaler = MinMaxScaler(feature_range=(-1, 1))
+		targets = targets_scaler.fit_transform(raw_targets)
+
+		joblib.dump(targets_scaler, 'dataset/targets_scaler.pkl')
+		
+		images = np.reshape(images, (-1, image_size, image_size, 1))
+		return images, targets
+
+	images = np.reshape(images, (-1, image_size, image_size, 1))
+	return images
+
+def unscaling_dataset(scaled_targets, scaled_images=None):
+	targets_scaler = joblib.load('dataset/targets_scaler.pkl')
+	targets = targets_scaler.inverse_transform(scaled_targets)
+
+	if scaled_images is not None:
+		image_scaler = joblib.load('dataset/image_scaler.pkl')
+		images = image_scaler.inverse_transform(scaled_images)
+
+		return images, targets
+
+	return targets
+
+def fetch_next_batch(train_images, train_targets, step):
+	offset = (step * batch_size) % (len(train_images) - batch_size)
+
+	batch_train_images = train_images[offset:(offset + batch_size)]
+	batch_train_targets = train_targets[offset:(offset + batch_size)]
+
+	# Horizontal flipping the images
+	horizontal_flipped_images = batch_train_images[:, :, ::-1, :]
+	batch_train_images = np.append(batch_train_images, horizontal_flipped_images, axis=0)
+
+	# Horizontal flipping the targets
+	batch_train_targets = np.append(batch_train_targets, batch_train_targets, axis=0)
+	batch_train_targets[batch_size:, ::2] = batch_train_targets[batch_size:, ::2] * -1
+
+	flip_indices = [(0, 2), (1, 3), (4, 8), (5, 9), (6, 10), (7, 11), (12, 16), (13, 17), (14, 18), (15, 19), (22, 24), (23, 25)]
+
+	for a, b in flip_indices:
+		batch_train_targets[batch_size:, [a, b]] = batch_train_targets[batch_size:, [b, a]]
+
+	return batch_train_images, batch_train_targets
 
 def log(train_loss, validation_loss):
 	with open(file_path + log_file, 'ab') as f:

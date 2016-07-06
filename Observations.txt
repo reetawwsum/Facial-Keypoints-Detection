@@ -208,3 +208,18 @@ Loss at Epoch 25: 0.047118
 43. Model is overfitting. Adding l2 regularisation on full connected layers.
 44. I haven't implemented dropout correctly. Dropout is only for training. Plus early layers should have low dropout.
 45. Implementing dropout correctly.
+Loss at Epoch 7: 0.059217
+  Training Accuracy: 0.241
+  Validation Accuracy: 0.346
+Loss at Epoch 8: 0.051771
+  Training Accuracy: 0.225
+  Validation Accuracy: 0.346
+Loss at Epoch 9: 0.056378
+  Training Accuracy: 0.236
+  Validation Accuracy: 0.346
+Loss at Epoch 10: 0.049914
+  Training Accuracy: 0.222
+  Validation Accuracy: 0.346
+Loss at Epoch 11: 0.046884
+  Training Accuracy: 0.215
+  Validation Accuracy: 0.347

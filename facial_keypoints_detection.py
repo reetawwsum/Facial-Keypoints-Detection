@@ -3,68 +3,11 @@ import numpy as np
 from facial_keypoints_detection_input import *
 from facial_keypoints_detection_model import *
 from facial_keypoints_plot import *
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.externals import joblib
-from six.moves import cPickle as pickle
 
 learning_rate = 1e-3
 max_steps = 13601
 image_size = 96
 batch_size = 64
-
-file_path = 'dataset/'
-train_validation_file = 'train_validation_loss.pickle'
-
-def scaling_dataset(raw_images, raw_targets=None):
-	image_scaler = MinMaxScaler(feature_range=(0, 1))
-	images = image_scaler.fit_transform(raw_images)
-
-	joblib.dump(image_scaler, 'dataset/image_scaler.pkl')
-
-	if raw_targets is not None:
-		targets_scaler = MinMaxScaler(feature_range=(-1, 1))
-		targets = targets_scaler.fit_transform(raw_targets)
-
-		joblib.dump(targets_scaler, 'dataset/targets_scaler.pkl')
-		
-		images = np.reshape(images, (-1, image_size, image_size, 1))
-		return images, targets
-
-	images = np.reshape(images, (-1, image_size, image_size, 1))
-	return images
-
-def unscaling_dataset(scaled_targets, scaled_images=None):
-	targets_scaler = joblib.load('dataset/targets_scaler.pkl')
-	targets = targets_scaler.inverse_transform(scaled_targets)
-
-	if scaled_images is not None:
-		image_scaler = joblib.load('dataset/image_scaler.pkl')
-		images = image_scaler.inverse_transform(scaled_images)
-
-		return images, targets
-
-	return targets
-
-def fetch_next_batch(train_images, train_targets, step):
-	offset = (step * batch_size) % (len(train_images) - batch_size)
-
-	batch_train_images = train_images[offset:(offset + batch_size)]
-	batch_train_targets = train_targets[offset:(offset + batch_size)]
-
-	# Horizontal flipping the images
-	horizontal_flipped_images = batch_train_images[:, :, ::-1, :]
-	batch_train_images = np.append(batch_train_images, horizontal_flipped_images, axis=0)
-
-	# Horizontal flipping the targets
-	batch_train_targets = np.append(batch_train_targets, batch_train_targets, axis=0)
-	batch_train_targets[batch_size:, ::2] = batch_train_targets[batch_size:, ::2] * -1
-
-	flip_indices = [(0, 2), (1, 3), (4, 8), (5, 9), (6, 10), (7, 11), (12, 16), (13, 17), (14, 18), (15, 19), (22, 24), (23, 25)]
-
-	for a, b in flip_indices:
-		batch_train_targets[batch_size:, [a, b]] = batch_train_targets[batch_size:, [b, a]]
-
-	return batch_train_images, batch_train_targets
 
 def run_training():
 	# Building my graph
@@ -111,32 +54,22 @@ def run_training():
 
 		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]}
 
-		train_loss = []
-		validation_loss = []
-
 		for step in xrange(max_steps):
 			batch_train_images, batch_train_targets = fetch_next_batch(train_images, train_targets, step)
 
 			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [0.9, 0.8, 0.7, 0.5]}
 
 			l, _ = sess.run([loss, train], feed_dict=feed_dict)
-			train_loss.append(l)
-
-			l1 = sess.run(loss, feed_dict=validation_feed_dict)
-			validation_loss.append(l1)
 
 			if not step % 34:
 				saver.save(sess, 'dataset/my-model', global_step=step/34) 
 
+				l1 = sess.run(loss, feed_dict=validation_feed_dict)
+				log(l, l1)
+
 				print 'Loss at Epoch %d: %f' % (step/34, l)
 				print '  Training Accuracy: %.3f' % sess.run(score, feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]})
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
-
-	# Storing train loss and validation loss in a file
-	train_validation_loss = {'train_loss': np.array(train_loss), 'validation_loss': np.array(validation_loss)}
-
-	with open(file_path + train_validation_file, 'wb') as f:
-		pickle.dump(train_validation_loss, f)
 
 def make_predictions():
 	# Building my graph
