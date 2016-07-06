@@ -9,13 +9,25 @@ def placeholder_input():
 
 	return images_placeholder, targets_placeholder	
 
-def weight_variable(shape, stddev):
+def weight_variable(shape, stddev, wd=None):
 	initial = tf.truncated_normal(shape, stddev=stddev)
-	return tf.Variable(initial)
+	var = tf.Variable(initial)
 
-def bias_variable(shape):
+	if wd is not None:
+		weight_decay = tf.mul(tf.nn.l2_loss(var), wd)
+		tf.add_to_collection('losses', weight_decay)
+
+	return var
+
+def bias_variable(shape, bd=None):
 	initial = tf.constant(0.1, shape=shape)
-	return tf.Variable(initial)
+	var = tf.Variable(initial)
+
+	if bd is not None:
+		bias_decay = tf.mul(tf.nn.l2_loss(var), bd)
+		tf.add_to_collection('losses', bias_decay)
+
+	return var
 
 def conv2d(x, W):
 	return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
@@ -59,8 +71,8 @@ def inference(images):
 
 	# Fully connected layer 1
 	with tf.name_scope('fc1'):
-		weights = weight_variable([12 * 12 * 128, 1000], 1e-3)
-		biases = bias_variable([1000])
+		weights = weight_variable([12 * 12 * 128, 1000], 1e-3, 5e-4)
+		biases = bias_variable([1000], 5e-4)
 
 		pool3_flat = tf.reshape(conv3_drop, [-1, 12 * 12 * 128])
 		fc1 = tf.nn.relu(tf.matmul(pool3_flat, weights) + biases)
@@ -69,15 +81,15 @@ def inference(images):
 
 	# Fully connected layer 2
 	with tf.name_scope('fc2'):
-		weights = weight_variable([1000, 1000], 1e-3)
-		biases = bias_variable([1000])
+		weights = weight_variable([1000, 1000], 1e-3, 5e-4)
+		biases = bias_variable([1000], 5e-4)
 
 		fc2 = tf.nn.relu(tf.matmul(fc1_drop, weights) + biases)
 
 	# Linear layer
 	with tf.name_scope('linear'):
-		weights = weight_variable([1000, 30], 1e-3)
-		biases = bias_variable([30])
+		weights = weight_variable([1000, 30], 1e-3, 5e-4)
+		biases = bias_variable([30], 5e-4)
 
 		logits = tf.matmul(fc2, weights) + biases
 
@@ -85,7 +97,10 @@ def inference(images):
 
 def loss_op(logits, targets):
 	# Mean square error (MSE)
-	loss = tf.reduce_mean(tf.square(logits - targets))
+	mse_loss = tf.reduce_mean(tf.square(logits - targets))
+
+	tf.add_to_collection('losses', mse_loss)
+	loss = tf.add_n(tf.get_collection('losses'))
 
 	return loss
 

@@ -205,3 +205,4 @@ Loss at Epoch 25: 0.047118
   Validation Accuracy: 0.348
 41. Performing data augmentation on full batch.
 42. Model is converging.
+43. Model is overfitting. Adding l2 regularisation on full connected layers.
