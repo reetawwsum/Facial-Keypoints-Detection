@@ -5,7 +5,7 @@ Detect the location of keypoints on face images
 
 1. Two layer Neural Network - 2 Layer (9216-100-30)
 2. Six layer Convolutional Neural Network - 6 layer Convnet (1-32-P-64-P-128-P-500FC-500FC-30)
-3. Six layer Convolutional Neural Network - 6 layer Convnet (1-32-P-D-64-P-D-128-P-D-1000FC-D-1000FC-30)
+3. Six layer Convolutional Neural Network - 6 layer Convnet (1-32-P-D-64-P-D-128-P-D-1000FC-D-1000FC-D-30)
 
 ## Libraries used
 

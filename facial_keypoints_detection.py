@@ -18,7 +18,7 @@ def run_training():
 		images_placeholder, targets_placeholder = placeholder_input()
 
 		# Creating placeholder for dropout
-		keep_prob = tf.placeholder(tf.float32, shape=(4))
+		keep_prob = tf.placeholder(tf.float32, shape=(5))
 
 		# Builds a graph that computes inference
 		logits = inference(images_placeholder, keep_prob)
@@ -49,14 +49,14 @@ def run_training():
 		train_images, train_targets = scaling_dataset(train_dataset.images, train_dataset.targets)
 		validation_images, validation_targets = scaling_dataset(validation_dataset.images, validation_dataset.targets)
 
-		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]}
+		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets, keep_prob: [1.0, 1.0, 1.0, 1.0, 1.0]}
 
 		unscaled_validation_targets = unscaling_dataset(validation_targets)
 
 		for step in xrange(max_steps):
 			batch_train_images, batch_train_targets = fetch_next_batch(train_images, train_targets, step)
 
-			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [0.9, 0.8, 0.7, 0.5]}
+			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [0.9, 0.8, 0.7, 0.5, 0.5]}
 
 			scaled_train_predictions, l, _ = sess.run([logits, loss, train], feed_dict=feed_dict)
 
@@ -86,7 +86,7 @@ def make_predictions():
 		images_placeholder, _ = placeholder_input()
 
 		# Creating placeholder for dropout
-		keep_prob = tf.placeholder(tf.float32, shape=(4))
+		keep_prob = tf.placeholder(tf.float32, shape=(5))
 
 		# Building a graph inference
 		logits = inference(images_placeholder, keep_prob)
@@ -108,7 +108,7 @@ def make_predictions():
 		predictions = []
 
 		for i, image in enumerate(test_images):
-			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, image_size, image_size, 1)), keep_prob: [1.0, 1.0, 1.0, 1.0]})
+			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, image_size, image_size, 1)), keep_prob: [1.0, 1.0, 1.0, 1.0, 1.0]})
 			prediction = unscaling_dataset(scaled_prediction)
 
 			predictions.append(prediction[0])

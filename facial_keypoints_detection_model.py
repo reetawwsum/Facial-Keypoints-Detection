@@ -87,12 +87,14 @@ def inference(images, keep_prob):
 
 		fc2 = tf.nn.relu(tf.matmul(fc1_drop, weights) + biases)
 
+	fc2_drop = tf.nn.dropout(fc2, keep_prob[4])
+
 	# Linear layer
 	with tf.name_scope('linear'):
 		weights = weight_variable([1000, 30], 1e-3, 5e-4)
 		biases = bias_variable([30], 5e-4)
 
-		logits = tf.matmul(fc2, weights) + biases
+		logits = tf.matmul(fc2_drop, weights) + biases
 
 	return logits
 
