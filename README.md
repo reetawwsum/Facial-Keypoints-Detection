@@ -14,5 +14,10 @@ Detect the location of keypoints on face images
 3. Tensorflow (0.8)
 4. Scikit-learn (0.17)
 
+## How to run
+
+1. Place training.csv and test.csv from Kaggle into dataset folder.
+2. Run **facial_keypoints_detection.py**.
+
 ## Licence
 [The MIT License (MIT)](LICENSE)
