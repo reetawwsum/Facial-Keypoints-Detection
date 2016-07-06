@@ -187,3 +187,21 @@ Loss at Epoch 3: 70.577835
   Validation Accuracy: 8.132
 38. Model is overshooting. Reducing the learning rate.
 39. Reducing the learning rate doesn't worked. Changing weight initialisation and the learning algorithm.
+40. Problem was in data augmentation; targets were not getting flipped correctly.
+Loss at Epoch 21: 0.053000
+  Training Accuracy: 0.230
+  Validation Accuracy: 0.347
+Loss at Epoch 22: 0.048028
+  Training Accuracy: 0.219
+  Validation Accuracy: 0.349
+Loss at Epoch 23: 0.042532
+  Training Accuracy: 0.206
+  Validation Accuracy: 0.348
+Loss at Epoch 24: 0.051881
+  Training Accuracy: 0.228
+  Validation Accuracy: 0.348
+Loss at Epoch 25: 0.047118
+  Training Accuracy: 0.217
+  Validation Accuracy: 0.348
+41. Performing data augmentation on full batch.
+42. Model is converging.
