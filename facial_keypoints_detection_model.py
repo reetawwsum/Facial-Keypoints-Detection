@@ -9,8 +9,8 @@ def placeholder_input():
 
 	return images_placeholder, targets_placeholder	
 
-def weight_variable(shape):
-	initial = tf.truncated_normal(shape, stddev=0.1)
+def weight_variable(shape, stddev):
+	initial = tf.truncated_normal(shape, stddev=stddev)
 	return tf.Variable(initial)
 
 def bias_variable(shape):
@@ -26,10 +26,10 @@ def max_pool_2x2(x):
 def inference(images):
 	# Convolutional layer 1
 	with tf.name_scope('conv1'):
-		weights = weight_variable([3, 3, 1, 32])
+		kernel = weight_variable([3, 3, 1, 32], 1e-4)
 		biases = bias_variable([32])
 
-		conv1 = tf.nn.relu(conv2d(images, weights) + biases)
+		conv1 = tf.nn.relu(conv2d(images, kernel) + biases)
 
 	pool1 = max_pool_2x2(conv1)
 
@@ -37,10 +37,10 @@ def inference(images):
 
 	# Convolutional layer 2
 	with tf.name_scope('conv2'):
-		weights = weight_variable([2, 2, 32, 64])
+		kernel = weight_variable([2, 2, 32, 64], 1e-4)
 		biases = bias_variable([64])
 
-		conv2 = tf.nn.relu(conv2d(conv1_drop, weights) + biases)
+		conv2 = tf.nn.relu(conv2d(conv1_drop, kernel) + biases)
 
 	pool2 = max_pool_2x2(conv2)
 
@@ -48,10 +48,10 @@ def inference(images):
 
 	# Convolutional layer 3
 	with tf.name_scope('conv3'):
-		weights = weight_variable([2, 2, 64, 128])
+		kernel = weight_variable([2, 2, 64, 128], 1e-4)
 		biases = bias_variable([128])
 
-		conv3 = tf.nn.relu(conv2d(conv2_drop, weights) + biases)
+		conv3 = tf.nn.relu(conv2d(conv2_drop, kernel) + biases)
 
 	pool3 = max_pool_2x2(conv3)
 
@@ -59,7 +59,7 @@ def inference(images):
 
 	# Fully connected layer 1
 	with tf.name_scope('fc1'):
-		weights = weight_variable([12 * 12 * 128, 1000])
+		weights = weight_variable([12 * 12 * 128, 1000], 1e-3)
 		biases = bias_variable([1000])
 
 		pool3_flat = tf.reshape(conv3_drop, [-1, 12 * 12 * 128])
@@ -69,14 +69,14 @@ def inference(images):
 
 	# Fully connected layer 2
 	with tf.name_scope('fc2'):
-		weights = weight_variable([1000, 1000])
+		weights = weight_variable([1000, 1000], 1e-3)
 		biases = bias_variable([1000])
 
 		fc2 = tf.nn.relu(tf.matmul(fc1_drop, weights) + biases)
 
 	# Linear layer
 	with tf.name_scope('linear'):
-		weights = weight_variable([1000, 30])
+		weights = weight_variable([1000, 30], 1e-3)
 		biases = bias_variable([30])
 
 		logits = tf.matmul(fc2, weights) + biases

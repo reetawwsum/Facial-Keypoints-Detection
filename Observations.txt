@@ -186,3 +186,4 @@ Loss at Epoch 3: 70.577835
   Training Accuracy: 8.401
   Validation Accuracy: 8.132
 38. Model is overshooting. Reducing the learning rate.
+39. Reducing the learning rate doesn't worked. Changing weight initialisation and the learning algorithm.
