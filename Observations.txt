@@ -206,3 +206,5 @@ Loss at Epoch 25: 0.047118
 41. Performing data augmentation on full batch.
 42. Model is converging.
 43. Model is overfitting. Adding l2 regularisation on full connected layers.
+44. I haven't implemented dropout correctly. Dropout is only for training. Plus early layers should have low dropout.
+45. Implementing dropout correctly.

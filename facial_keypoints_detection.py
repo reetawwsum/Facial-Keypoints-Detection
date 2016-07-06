@@ -74,8 +74,11 @@ def run_training():
 		# Creating placeholder for images and targets
 		images_placeholder, targets_placeholder = placeholder_input()
 
+		# Creating placeholder for dropout
+		keep_prob = tf.placeholder(tf.float32, shape=(4))
+
 		# Builds a graph that computes inference
-		logits = inference(images_placeholder)
+		logits = inference(images_placeholder, keep_prob)
 
 		# Adding loss op to the graph
 		loss = loss_op(logits, targets_placeholder)
@@ -106,7 +109,7 @@ def run_training():
 		train_images, train_targets = scaling_dataset(train_dataset.images, train_dataset.targets)
 		validation_images, validation_targets = scaling_dataset(validation_dataset.images, validation_dataset.targets)
 
-		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets}
+		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]}
 
 		train_loss = []
 		validation_loss = []
@@ -114,9 +117,9 @@ def run_training():
 		for step in xrange(max_steps):
 			batch_train_images, batch_train_targets = fetch_next_batch(train_images, train_targets, step)
 
-			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets}
+			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [0.9, 0.8, 0.7, 0.5]}
 
-			l, s, _ = sess.run([loss, score, train], feed_dict=feed_dict)
+			l, _ = sess.run([loss, train], feed_dict=feed_dict)
 			train_loss.append(l)
 
 			l1 = sess.run(loss, feed_dict=validation_feed_dict)
@@ -126,7 +129,7 @@ def run_training():
 				saver.save(sess, 'dataset/my-model', global_step=step/34) 
 
 				print 'Loss at Epoch %d: %f' % (step/34, l)
-				print '  Training Accuracy: %.3f' % s
+				print '  Training Accuracy: %.3f' % sess.run(score, feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]})
 				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
 
 	# Storing train loss and validation loss in a file
@@ -143,8 +146,11 @@ def make_predictions():
 		# Creating placeholder for images
 		images_placeholder, _ = placeholder_input()
 
+		# Creating placeholder for dropout
+		keep_prob = tf.placeholder(tf.float32, shape=(4))
+
 		# Building a graph inference
-		logits = inference(images_placeholder)
+		logits = inference(images_placeholder, keep_prob)
 
 		# Creating saver to read training checkpoints
 		saver = tf.train.Saver()
@@ -163,7 +169,7 @@ def make_predictions():
 		predictions = []
 
 		for i, image in enumerate(test_images):
-			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, image_size, image_size, 1))})
+			scaled_prediction = sess.run(logits, feed_dict={images_placeholder: np.reshape(image, (1, image_size, image_size, 1)), keep_prob: [1.0, 1.0, 1.0, 1.0]})
 			prediction = unscaling_dataset(scaled_prediction)
 
 			predictions.append(prediction[0])

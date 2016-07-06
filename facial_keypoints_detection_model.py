@@ -35,7 +35,7 @@ def conv2d(x, W):
 def max_pool_2x2(x):
 	return tf.nn.max_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
-def inference(images):
+def inference(images, keep_prob):
 	# Convolutional layer 1
 	with tf.name_scope('conv1'):
 		kernel = weight_variable([3, 3, 1, 32], 1e-4)
@@ -45,7 +45,7 @@ def inference(images):
 
 	pool1 = max_pool_2x2(conv1)
 
-	conv1_drop = tf.nn.dropout(pool1, 0.1)
+	conv1_drop = tf.nn.dropout(pool1, keep_prob[0])
 
 	# Convolutional layer 2
 	with tf.name_scope('conv2'):
@@ -56,7 +56,7 @@ def inference(images):
 
 	pool2 = max_pool_2x2(conv2)
 
-	conv2_drop = tf.nn.dropout(pool2, 0.2)
+	conv2_drop = tf.nn.dropout(pool2, keep_prob[1])
 
 	# Convolutional layer 3
 	with tf.name_scope('conv3'):
@@ -67,7 +67,7 @@ def inference(images):
 
 	pool3 = max_pool_2x2(conv3)
 
-	conv3_drop = tf.nn.dropout(pool3, 0.3)
+	conv3_drop = tf.nn.dropout(pool3, keep_prob[2])
 
 	# Fully connected layer 1
 	with tf.name_scope('fc1'):
@@ -77,7 +77,7 @@ def inference(images):
 		pool3_flat = tf.reshape(conv3_drop, [-1, 12 * 12 * 128])
 		fc1 = tf.nn.relu(tf.matmul(pool3_flat, weights) + biases)
 
-	fc1_drop = tf.nn.dropout(fc1, 0.5)
+	fc1_drop = tf.nn.dropout(fc1, keep_prob[3])
 
 	# Fully connected layer 2
 	with tf.name_scope('fc2'):
