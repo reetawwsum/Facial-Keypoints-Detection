@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 
 image_size = 96
@@ -112,7 +113,7 @@ def train_op(loss, learning_rate):
 
 def accuracy(predictions, targets):
 	# Root mean square error (RMSE)
-	accuracy = tf.sqrt(tf.reduce_mean(tf.square(predictions - targets)))
+	accuracy = np.sqrt(np.mean(np.square(predictions - targets)))
 
 	return accuracy
 

@@ -29,9 +29,6 @@ def run_training():
 		# Adding train op to the graph
 		train = train_op(loss, learning_rate)
 
-		# Adding accuracy op to the graph
-		score = accuracy(logits, targets_placeholder)
-
 		# Creating saver to write training checkpoints
 		saver = tf.train.Saver()
 
@@ -54,22 +51,31 @@ def run_training():
 
 		validation_feed_dict = {images_placeholder: validation_images, targets_placeholder: validation_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]}
 
+		unscaled_validation_targets = unscaling_dataset(validation_targets)
+
 		for step in xrange(max_steps):
 			batch_train_images, batch_train_targets = fetch_next_batch(train_images, train_targets, step)
 
 			feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [0.9, 0.8, 0.7, 0.5]}
 
-			l, _ = sess.run([loss, train], feed_dict=feed_dict)
+			scaled_train_predictions, l, _ = sess.run([logits, loss, train], feed_dict=feed_dict)
 
 			if not step % 34:
 				saver.save(sess, 'dataset/my-model', global_step=step/34) 
 
-				l1 = sess.run(loss, feed_dict=validation_feed_dict)
+				unscaled_train_predictions = unscaling_dataset(scaled_train_predictions)
+				unscaled_train_targets = unscaling_dataset(batch_train_targets)
+
+				scaled_validation_predictions, l1 = sess.run([logits, loss], feed_dict=validation_feed_dict)
+
+				unscaled_validation_predictions = unscaling_dataset(scaled_validation_predictions)
+
+				# Logging training and validation loss
 				log(l, l1)
 
 				print 'Loss at Epoch %d: %f' % (step/34, l)
-				print '  Training Accuracy: %.3f' % sess.run(score, feed_dict = {images_placeholder: batch_train_images, targets_placeholder: batch_train_targets, keep_prob: [1.0, 1.0, 1.0, 1.0]})
-				print '  Validation Accuracy: %.3f' % sess.run(score, feed_dict=validation_feed_dict)
+				print '  Training Score: %.3f' % accuracy(unscaled_train_predictions, unscaled_train_targets)
+				print '  Validation Score: %.3f' % accuracy(unscaled_validation_predictions, unscaled_validation_targets)
 
 def make_predictions():
 	# Building my graph
