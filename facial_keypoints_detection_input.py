@@ -1,12 +1,13 @@
 import csv
 import numpy as np
+from datetime import datetime
 from six.moves import cPickle as pickle
 from sklearn import cross_validation
 
 file_path = 'dataset/'
 train_file = 'training.csv'
 test_file = 'test.csv'
-train_validation_file = 'train_validation_loss.pickle'
+log_file = 'log.csv'
 
 class facial:
 	pass
@@ -98,9 +99,25 @@ def load_images(validation_size=0.1):
 
 	return dataset
 
+def log(train_loss, validation_loss):
+	with open(file_path + log_file, 'ab') as f:
+		csv_writer = csv.writer(f, delimiter=',')
+		csv_writer.writerow([train_loss, validation_loss, datetime.now().strftime('%H:%M:%S %d-%m-%Y')])
+
 def load_train_validation_loss():
-	with open(file_path + train_validation_file, 'rb') as f:
-		train_validation_loss = pickle.load(f)
+	with open(file_path + log_file, 'rb') as f:
+		csv_reader = csv.reader(f, delimiter=',')
+
+		train_loss = []
+		validation_loss = []
+		timestamp = []
+
+		for row in csv_reader:
+			train_loss.append(row[0])
+			validation_loss.append(row[1])
+			timestamp.append(row[2])
+
+	train_validation_loss = {'train_loss': train_loss, 'validation_loss': validation_loss, 'timestamp': timestamp}
 
 	return train_validation_loss
 
